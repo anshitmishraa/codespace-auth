@@ -40,7 +40,7 @@ app.post("/register", async (req,res) => {
         // generate a token for user and send it
         const token = jwt.sign(
             {id: user._id, email},
-            'shhhh', // process.env.jwtsecret
+            process.env.JWTSECRET, 
             {
                 expiresIn: "2h"
             }
@@ -72,7 +72,7 @@ app.post('/login', async (req,res) => {
         if(user && (await bcrypt.compare(password,user.password))){
             const token = jwt.sign(
                 {id: user._id},
-                'shhhh', // process.env.jwtsecret
+                process.env.JWTSECRET,
             {
                 expiresIn: "2h"
             }
@@ -81,7 +81,7 @@ app.post('/login', async (req,res) => {
             user.password = undefined
 
             // send token in user cookie
-            const opttions = {
+            const options = {
                 expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
                 httpOnly: true
             }
@@ -91,13 +91,17 @@ app.post('/login', async (req,res) => {
                 token,
                 user
             })
-
-            res.status(201).json(user)
+        } else {
+            res.status(401).send('Please enter correct password')
         }
         // send a token  
     } catch (error) {
         console.log(error);
     }
+})
+
+app.get("/dashboard", (req,res) => {
+    res.send("Welcome to Dashboard")
 })
 
 module.exports = app
