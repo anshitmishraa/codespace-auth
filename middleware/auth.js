@@ -9,8 +9,14 @@ const auth = (req,res,next) => {
         res.send(403).send('Please login first')
     }
     // decode that token and get id
-    const decode = jwt.verify(token,process.env.JWTSECRET)
-    console.log(decode)
+    try {
+        const decode = jwt.verify(token,process.env.JWTSECRET);
+        console.log(decode);
+        req.user = decode
+    } catch(error) {
+        console.log(error);
+        res.status(401).send('Invalid Token');
+    }
     // query to DB for that user id
     
 
